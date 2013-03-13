@@ -84,6 +84,7 @@ class Door_closed(GameElement):
 
     def interact(self, player):
         player.inventory.append(self)
+        if len(player.inventory)
         GAME_BOARD.draw_msg("This door is locked. You must collect 3 Nicholas Cage's to move on to the next level %d." % (len(player.inventory)))
 
 	#if we have 3 nicholas cage's, door = door_open 
