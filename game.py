@@ -96,13 +96,13 @@ class Door_closed(GameElement):
 def initialize():
     """Put game initialization code here"""    
     rock_positions = [
-		(3,2),
-		(2,4),
+	(3,2),
+	(2,4),
         (3,3),
         (0,8),
         (6,8),
         (8,4)
-	]
+    ]
 
     rocks = []
     for pos in rock_positions:
