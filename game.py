@@ -32,17 +32,19 @@ class MoveRock(GameElement):
         next_y = self.y - del_y
 
         if -1 < next_x < 9 and -1 < next_y < 9:
-            GAME_BOARD.del_el(next_x, next_y)
-            self.x = next_x
-            self.y = next_y
-            GAME_BOARD.set_el(next_x, next_y, self)
-            self.SOLID = False
+            #GAME_BOARD.del_el(next_x, next_y)
+            #self.x = next_x
+            #self.y = next_y
+            #GAME_BOARD.set_el(next_x, next_y, self)
+            #self.SOLID = False
             existing_el = GAME_BOARD.get_el(next_x, next_y)
 
             if existing_el is None or not existing_el.SOLID:
             # If there's nothing there_or_ if the existing element, is not solid, walk through
                 GAME_BOARD.del_el(self.x, self.y)
                 GAME_BOARD.set_el(next_x, next_y, self)
+                self.x = next_x
+            	self.y = next_y
 
 class Rock(GameElement):
     IMAGE = "Rock"
