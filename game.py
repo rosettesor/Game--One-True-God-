@@ -28,8 +28,8 @@ class MoveRock(GameElement):
     def interact(self, player):
         del_x = player.x - self.x
         del_y = player.y - self.y
-        next_x = self.x + del_x
-        next_y = self.y + del_y
+        next_x = self.x - del_x
+        next_y = self.y - del_y
 
         if -1 < next_x < 9 and -1 < next_y < 9:
             GAME_BOARD.del_el(next_x, next_y)
