@@ -9,7 +9,7 @@ SCREEN_Y = 1000
 
 game_window = pyglet.window.Window(SCREEN_X, SCREEN_Y)
 
-pyglet.resource.path = ["images/"]
+pyglet.resource.path = ["images/", "sounds/"]
 pyglet.resource.reindex()
 
 # Custom student changes
@@ -21,6 +21,7 @@ TILE_HEIGHT = 0
 
 def setup_images():
     filenames = {
+            "keanu": "keanureeves.png",
             "NicCage": "nic_cage.png",
             "EnemyBug": "Enemy Bug.png",
             "Wall": "Wall Block.png",
@@ -244,3 +245,4 @@ class UpdateWrapper(object):
 
 if __name__ == "__main__":
     run()
+
