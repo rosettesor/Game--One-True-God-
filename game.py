@@ -24,6 +24,7 @@ GAME_HEIGHT = 9
 
 class MoveRock(GameElement):
     IMAGE = "Rock"
+    SOLID = True
 
     def interact(self, player):
         del_x = player.x - self.x
@@ -32,19 +33,19 @@ class MoveRock(GameElement):
         next_y = self.y - del_y
 
         if -1 < next_x < 9 and -1 < next_y < 9:
-            #GAME_BOARD.del_el(next_x, next_y)
-            #self.x = next_x
-            #self.y = next_y
-            #GAME_BOARD.set_el(next_x, next_y, self)
-            #self.SOLID = False
+
             existing_el = GAME_BOARD.get_el(next_x, next_y)
 
             if existing_el is None or not existing_el.SOLID:
             # If there's nothing there_or_ if the existing element, is not solid, walk through
                 GAME_BOARD.del_el(self.x, self.y)
-                GAME_BOARD.set_el(next_x, next_y, self)
                 self.x = next_x
-            	self.y = next_y
+                self.y = next_y
+                GAME_BOARD.set_el(next_x, next_y, self)
+                self.SOLID = False
+                # player.sound.play
+            # else:
+            #     self.SOLID = True
 
 class Rock(GameElement):
     IMAGE = "Rock"
@@ -60,7 +61,22 @@ class NicC(GameElement):
 
     def interact(self, player):
         player.inventory.append(self)
-        GAME_BOARD.draw_msg("Success! You found him! You have %d Nicholas Cage!" % (len(player.inventory)))
+        player.sound.play()
+        GAME_BOARD.draw_msg("Success! You found him! You have %d Nicholas Cage(s)!" % (len(player.inventory)))
+
+class Keanu(GameElement):
+    IMAGE = "keanu"
+
+    def interact(self, player):
+        GAME_BOARD.draw_msg("Woops! This is NOT the One-True-God. Keep searching.")
+        SOLID = False
+
+class Grumpy(GameElement):
+    IMAGE = "Cat"
+
+    def interact(self, player):
+        GAME_BOARD.draw_msg("Woops! This is NOT the One-True-God. Keep searching.")
+        SOLID = False
 
 class Character(GameElement):
     IMAGE = "EnemyBug"
@@ -78,33 +94,35 @@ class Character(GameElement):
 
     def __init__(self):
         GameElement.__init__(self)
+        self.sound = pyglet.resource.media("explosion.wav", streaming=False)
         self.inventory = []
 
 class Door_closed(GameElement):
     IMAGE = "DoorClosed"
-    SOLID = True
 
     def interact(self, player):
         if (len(player.inventory)) < 3:
-        	GAME_BOARD.draw_msg("This door is locked. You must collect 3 Nicholas Cage's to move on to the next level." 
-	player.inventory.append(self)
-	#if we have 3 nicholas cage's, door = door_open 
-	if (len(player.inventory)) == 3:
-		class Door_opened(Door_closed):
-		self.IMAGE = "DoorOpen"
-		self.SOLID = False
+            self.SOLID = True
+            GAME_BOARD.draw_msg("This door is locked. You must collect at least 3 One-True-God's to unlock it.")
+        if (len(player.inventory)) >= 3:
+            class Door_opened(Door_closed):
+                self.sprite = pyglet.sprite.Sprite(pyglet.resource.image("Door Tall Open.png"))
+                self.SOLID = True
+                GAME_BOARD.draw_msg("Congratulations! You have unlocked the door! THE END")
+
 ####   End class definitions    ####
 
 def initialize():
-    """Put game initialization code here"""    
+    """Put game initialization code here"""
+
     rock_positions = [
-	(3,2),
-	(2,4),
+		(3,2),
+		(2,4),
         (3,3),
         (0,8),
         (6,8),
-        (8,4)
-    ]
+        (8,4),
+	]
 
     rocks = []
     for pos in rock_positions:
@@ -116,9 +134,11 @@ def initialize():
     move_rock_positions = [
         (7,3),
         (1,7),
-        (2,1),
+        (3,1),
         (4,0),
-        (2,8)
+        (2,8),
+        (7,5),
+        (7,1)
     ]
 
     move_rocks = []
@@ -150,7 +170,10 @@ def initialize():
         (8,2),
         (6,4),
         (6,5),
-        (8,5)
+        (8,5),
+        (0,5),
+        (0,6),
+        (0,1)
 
     ]
     wall_per = []
@@ -178,22 +201,48 @@ def initialize():
         GAME_BOARD.set_el(pos[0], pos[1], nic_c)
         nic_cg.append(nic_c)
 
-    GAME_BOARD.draw_msg("The object of this game is to find the One True God. Collect 3 of 'Him' to unlock the door.")
+    keanu_positions = [
+        (0,4),
+        (7,0),
+        (7,7)
+    ]
+
+    keanus = []
+    for pos in keanu_positions:
+        kcr = Keanu()
+        GAME_BOARD.register(kcr)
+        GAME_BOARD.set_el(pos[0], pos[1], kcr)
+        keanus.append(kcr)
+
+    cat_positions = [
+        (0,3),
+        (4,3),
+        (7,8)
+    ]
+
+    grumpy = []
+    for pos in cat_positions:
+        grumpy_cat = Grumpy()
+        GAME_BOARD.register(grumpy_cat)
+        GAME_BOARD.set_el(pos[0], pos[1], grumpy_cat)
+        grumpy.append(grumpy_cat)
+
+    GAME_BOARD.draw_msg("The object of this game is to find the One-True-God. Collect 3 of 'Him' to unlock the door.")
 def keyboard_handler():
     direction = None
 
     if KEYBOARD[key.UP]:
         direction = "up"
-        GAME_BOARD.draw_msg("You pressed up")
+        GAME_BOARD.draw_msg("Hint: Some of the stones can be moved... but be careful! You don't want to squish 'Him.'")
     if KEYBOARD[key.DOWN]:
         direction = "down"
-        GAME_BOARD.draw_msg("You pressed down")
+        GAME_BOARD.draw_msg("Hint: Some of the stones can be moved... but be careful! You don't want to squish 'Him.'")
     if KEYBOARD[key.LEFT]:
         direction = "left"
-        GAME_BOARD.draw_msg("You pressed left")
+        GAME_BOARD.draw_msg("Hint: Some of the stones can be moved... but be careful! You don't want to squish 'Him.'")
     if KEYBOARD[key.RIGHT]:
         direction = "right"
-        GAME_BOARD.draw_msg("You pressed right")
+        GAME_BOARD.draw_msg("Hint: Some of the stones can be moved... but be careful! You don't want to squish 'Him.'")
 
     if direction:
         next_location = PLAYER.next_pos(direction)
